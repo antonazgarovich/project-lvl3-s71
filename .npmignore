@@ -1,0 +1,16 @@
+src/
+__tests__/
+tmp/
+.git/
+.babelrc
+.eslintignore
+.eslintrc.yml
+.flowconfig
+.gitignore
+.npmignore
+.travis.yml
+node_modules/
+yarn.lock
+.DS_Store
+.vscode
+npm-debug.log
