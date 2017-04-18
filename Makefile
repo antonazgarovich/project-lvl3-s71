@@ -1,9 +1,7 @@
-o = '.'
-
 install:
 		npm install
 run:
-		npm run babel-node -- ./src/bin/page-loader.js $(o)
+		npm run babel-node -- ./src/bin/page-loader.js $(url)
 
 publish:
 		npm publish
