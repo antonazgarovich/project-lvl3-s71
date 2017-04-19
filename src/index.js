@@ -14,4 +14,4 @@ const loader = (url, output = '.') => {
     });
 };
 
-module.exports = loader;
+export default loader;

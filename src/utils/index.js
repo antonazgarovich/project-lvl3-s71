@@ -13,4 +13,4 @@ const getNameFromUrl = (url) => {
   return `${hostName}${pathName}.html`;
 };
 
-module.exports.getNameFromUrl = getNameFromUrl;
+export { getNameFromUrl }; // eslint-disable-line
