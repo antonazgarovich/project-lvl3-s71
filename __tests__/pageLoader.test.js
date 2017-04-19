@@ -1,15 +1,12 @@
 import nock from 'nock';
-import axios from 'axios';
-import httpAdapter from 'axios/lib/adapters/http';
 import fs from 'mz/fs';
 import path from 'path';
 import os from 'os';
 import loader from '../src';
+import axiosSetting from '../src/lib/axios';
 
 const host = 'http://localhost';
-
-axios.defaults.host = host;
-axios.defaults.adapter = httpAdapter;
+axiosSetting(host);
 
 const fixtureHello = path.join(__dirname, 'fixtures', 'hello.txt');
 
