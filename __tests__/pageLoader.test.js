@@ -25,14 +25,11 @@ describe('test page loader', () => {
       .reply(200, () => fs.createReadStream(fixtureHello));
 
     loader(`${host}/test`, pathToTempDir)
-      .then(() => {
-        fs.readFile(pathToTempFile).then((data) => {
-          expect(data.toString()).toBe('Hello World!');
-          done();
-        });
+      .then(() => fs.readFile(pathToTempFile))
+      .then((data) => {
+        expect(data.toString()).toBe('Hello World!');
+        done();
       })
-      .catch((err) => {
-        console.error(err);
-      });
+      .catch(err => done.fail(err));
   });
 });
