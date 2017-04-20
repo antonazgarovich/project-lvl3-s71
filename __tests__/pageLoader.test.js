@@ -1,30 +1,52 @@
 import nock from 'nock';
-import fs from 'mz/fs';
 import path from 'path';
 import os from 'os';
-import loader from '../src';
+import fs from 'mz/fs';
+import pageLoader from '../src';
 
 const host = 'http://localhost';
 
-const fixtureHello = path.join(__dirname, 'fixtures', 'hello.txt');
+const fixturesFolderBefore = path.join(__dirname, 'fixtures', 'before');
+const fixturesFolderAfter = path.join(__dirname, 'fixtures', 'after');
 
 describe('test page loader', () => {
   let pathToTempDir;
   let pathToTempFile;
+  let loaderResult;
   beforeAll(() => {
     pathToTempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tmp'));
     pathToTempFile = path.join(pathToTempDir, 'localhost-test.html');
-  });
 
-  it('test upload file', (done) => {
     nock(host)
       .get('/test')
-      .reply(200, () => fs.createReadStream(fixtureHello));
+      .reply(200, () => fs.createReadStream(path.join(fixturesFolderBefore, 'index.html')));
 
-    loader(`${host}/test`, pathToTempDir)
-      .then(() => fs.readFile(pathToTempFile))
-      .then((data) => {
-        expect(data.toString()).toBe('Hello World!');
+    loaderResult = pageLoader(`${host}/test`, pathToTempDir);
+  });
+
+  it('loader is uploaded main html', (done) => {
+    loaderResult
+      .then(done)
+      .catch(done.fail);
+  });
+
+  it('loader is uploaded assets and rename them', (done) => {
+    const pathToSvg = path.join(pathToTempDir, 'localhost-test_files', 'assets-hexlet-logo.svg');
+    const pathToCss = path.join(pathToTempDir, 'localhost-test_files', 'assets-style.css');
+    Promise.all([fs.stat(pathToSvg), fs.stat(pathToCss)])
+      .then(([statSvg, statCss]) => {
+        expect(statSvg).toBe(true);
+        expect(statCss).toBe(true);
+        done();
+      })
+      .catch(done.fail);
+  });
+
+  it('change assets path', (done) => {
+    const localhostTestHtmlPath = path.join(fixturesFolderAfter, 'localhost-test.html');
+    Promise.all([fs.readFile(pathToTempFile), fs.readFile(localhostTestHtmlPath)])
+      .then(([dataFromTempFile, dataFromFixture]) => {
+        expect(dataFromTempFile.toString()).toBe(dataFromFixture.toString());
         done();
       })
       .catch(done.fail);

@@ -3,11 +3,11 @@ import path from 'path';
 import axios from './lib/axios';
 import { getNameFromUrl } from './utils';
 
-const loader = (url, output = '.') => {
+const pageLoader = (url, output = '.') => {
   const pathOutput = path.resolve(output, getNameFromUrl(url));
   return axios.get(url)
     .then(res => fs.writeFile(pathOutput, res.data))
     .then(() => Promise.resolve(pathOutput));
 };
 
-export default loader;
+export default pageLoader;
