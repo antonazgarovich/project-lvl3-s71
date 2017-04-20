@@ -3,13 +3,10 @@ import fs from 'mz/fs';
 import path from 'path';
 import os from 'os';
 import loader from '../src';
-import axiosSetting from '../src/lib/axios';
 
 const host = 'http://localhost';
-axiosSetting(host);
 
 const fixtureHello = path.join(__dirname, 'fixtures', 'hello.txt');
-
 
 describe('test page loader', () => {
   let pathToTempDir;
@@ -30,6 +27,6 @@ describe('test page loader', () => {
         expect(data.toString()).toBe('Hello World!');
         done();
       })
-      .catch(err => done.fail(err));
+      .catch(done.fail);
   });
 });

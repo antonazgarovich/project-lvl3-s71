@@ -1,4 +1,4 @@
-import { getNameFromUrl } from '..';
+import { getNameFromUrl } from '../src/utils/index';
 
 describe('test getNameFromUrl', () => {
   it('only hostName', () => {
