@@ -1,9 +1,7 @@
 import fs from 'mz/fs';
 import path from 'path';
-import axiosSetting from './lib/axios';
+import axios from './lib/axios';
 import { getNameFromUrl } from './utils';
-
-const axios = axiosSetting();
 
 const loader = (url, output = '.') => {
   const pathOutput = path.resolve(output, getNameFromUrl(url));
