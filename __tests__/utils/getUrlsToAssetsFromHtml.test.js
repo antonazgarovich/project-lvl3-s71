@@ -1,12 +1,11 @@
-import fs from 'fs';
-import path from 'path';
 import { getUrlsToAssetsFromHtml } from '../../src/utils';
+import { getFileFixtureBefore } from '../helpers';
 
 describe('test getUrlsToAssetsFromHtml', () => {
   let htmlContent;
 
   beforeAll(() => {
-    htmlContent = fs.readFileSync(path.resolve('__tests__/fixtures/before/index.html'));
+    htmlContent = getFileFixtureBefore('index.html');
   });
 
   it('test', () => {
