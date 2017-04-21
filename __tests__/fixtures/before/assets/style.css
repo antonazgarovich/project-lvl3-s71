@@ -9,7 +9,12 @@ body {
   justify-content: center;
   align-items: center;
 }
+
 .hexlet-logo {
   width: 200px;
   height: 200px;
+}
+
+.no-img {
+  display: none;
 }
