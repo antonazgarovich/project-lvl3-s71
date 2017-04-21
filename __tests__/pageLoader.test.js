@@ -20,11 +20,11 @@ describe('test page loader', () => {
     nock(host)
       .get('/test')
       .reply(200, () => fs.createReadStream(path.join(fixturesFolderBefore, 'index.html')))
-      .get('/test/assets/style.css')
+      .get('/assets/style.css')
       .reply(200, () => fs.createReadStream(path.join(fixturesFolderBefore, 'assets', 'style.css')))
-      .get('/test/assets/hexlet-logo.svg')
+      .get('/assets/hexlet-logo.svg')
       .reply(200, () => fs.createReadStream(path.join(fixturesFolderBefore, 'assets', 'hexlet-logo.svg')))
-      .get('/test/assets/script.js')
+      .get('/assets/script.js')
       .reply(200, () => fs.createReadStream(path.join(fixturesFolderBefore, 'assets', 'script.js')));
 
     loaderResult = pageLoader(`${host}/test`, pathToTempDir);
