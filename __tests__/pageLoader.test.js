@@ -3,11 +3,9 @@ import path from 'path';
 import os from 'os';
 import fs from 'mz/fs';
 import pageLoader from '../src';
+import { getFileFixtureBefore, getFileFixtureAfter } from './helpers';
 
 const host = 'http://localhost';
-
-const fixturesFolderBefore = path.join(__dirname, 'fixtures', 'before');
-const fixturesFolderAfter = path.join(__dirname, 'fixtures', 'after');
 
 describe('test page loader', () => {
   let pathToTempDir;
@@ -19,13 +17,13 @@ describe('test page loader', () => {
 
     nock(host)
       .get('/test')
-      .reply(200, () => fs.createReadStream(path.join(fixturesFolderBefore, 'index.html')))
+      .reply(200, () => getFileFixtureBefore('index.html'))
       .get('/assets/style.css')
-      .reply(200, () => fs.createReadStream(path.join(fixturesFolderBefore, 'assets', 'style.css')))
+      .reply(200, () => getFileFixtureBefore('assets/style.css'))
       .get('/assets/hexlet-logo.svg')
-      .reply(200, () => fs.createReadStream(path.join(fixturesFolderBefore, 'assets', 'hexlet-logo.svg')))
+      .reply(200, () => getFileFixtureBefore('assets/hexlet-logo.svg'))
       .get('/assets/script.js')
-      .reply(200, () => fs.createReadStream(path.join(fixturesFolderBefore, 'assets', 'script.js')));
+      .reply(200, () => getFileFixtureBefore('assets/script.js'));
 
     loaderResult = pageLoader(`${host}/test`, pathToTempDir);
   });
@@ -49,7 +47,7 @@ describe('test page loader', () => {
   });
 
   it('change assets path', (done) => {
-    const localhostTestHtmlPath = path.join(fixturesFolderAfter, 'localhost-test.html');
+    const localhostTestHtmlPath = getFileFixtureAfter('localhost-test.html');
     Promise.all([fs.readFile(pathToTempFile), fs.readFile(localhostTestHtmlPath)])
       .then(([dataFromTempFile, dataFromFixture]) => {
         expect(dataFromTempFile.toString()).toBe(dataFromFixture.toString());
