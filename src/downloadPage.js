@@ -3,7 +3,8 @@ import { getUrlsToAssetsFromHtml } from './utils';
 import axios from './lib/axios';
 
 const loadAsset = (urlToResource, pathToSrc) =>
-  axios.get(resolveUrl(urlToResource, pathToSrc))
+  axios
+    .get(resolveUrl(urlToResource, pathToSrc))
     .then(({ data }) => data)
     .then(content => ({ src: pathToSrc, content }));
 
