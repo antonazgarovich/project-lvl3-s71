@@ -4,25 +4,27 @@ import { getSrcAttrByAssets } from './utils';
 import axios from './lib/axios';
 
 const http = debug('page-loader:http');
+const app = debug('page-loader:app');
 
 const loadAsset = (urlToResource, pathToSrc) => {
-  http('start load asset %s', pathToSrc);
+  http('start load asset: %s', pathToSrc);
   return axios
     .get(resolveUrl(urlToResource, pathToSrc))
     .then(({ data }) => data)
     .then((response) => {
-      http('finished load asset %s', pathToSrc);
+      http('finished load asset: %s', pathToSrc);
       return response;
     })
     .then(content => ({ src: pathToSrc, content }));
 };
 
 export default (url) => {
-  http('start load html %s', url);
+  app('start work');
+  http('start load html: %s', url);
   return axios
     .get(url)
     .then((response) => {
-      http('finished load html %s', url);
+      http('finished load html: %s', url);
       return response;
     })
     .then(({ data: content }) => ({ url, content }))
