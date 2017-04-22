@@ -2,21 +2,22 @@ import { resolve as resolveUrl } from 'url';
 import { getUrlsToAssetsFromHtml } from './utils';
 import axios from './lib/axios';
 
-const downloadAssets = (urlToResource, htmlContent) => {
-  const pathsToSrcAssetsFromHtml = getUrlsToAssetsFromHtml(htmlContent);
-
-  return Promise.all(
-    pathsToSrcAssetsFromHtml.map(pathToSrc =>
-      axios.get(resolveUrl(urlToResource, pathToSrc))
-        .then(({ data }) => data)
-        .then(content => ({ src: pathToSrc, content }))));
-};
+const loadAsset = (urlToResource, pathToSrc) =>
+  axios.get(resolveUrl(urlToResource, pathToSrc))
+    .then(({ data }) => data)
+    .then(content => ({ src: pathToSrc, content }));
 
 const downloadPage = url =>
-  axios.get(url)
-    .then(({ data }) => data)
-    .then(htmlContent =>
-      Promise.all([{ url, content: htmlContent }, downloadAssets(url, htmlContent)]));
+  axios
+    .get(url)
+    .then(({ data: content }) => ({ url, content }))
+    .then((html) => {
+      const pathsToSrcAssetsFromHtml = getUrlsToAssetsFromHtml(html.content);
+
+      return Promise
+        .all(pathsToSrcAssetsFromHtml.map(loadAsset.bind(null, html.url)))
+        .then(assets => [html, assets]);
+    });
 
 
 export default downloadPage;
