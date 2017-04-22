@@ -1,19 +1,20 @@
 import { resolve as resolveUrl } from 'url';
-import { downloadFileByUrl, getUrlsToAssetsFromHtml } from './utils';
-
-const downloadHtml = url => downloadFileByUrl(url);
+import { getUrlsToAssetsFromHtml } from './utils';
+import axios from './lib/axios';
 
 const downloadAssets = (urlToResource, htmlContent) => {
   const pathToSrcAssets = getUrlsToAssetsFromHtml(htmlContent);
 
   return Promise.all(
     pathToSrcAssets.map(pathToSrc =>
-      downloadFileByUrl(resolveUrl(urlToResource, pathToSrc))
+      axios.get(resolveUrl(urlToResource, pathToSrc))
+        .then(({ data }) => data)
         .then(content => ({ src: pathToSrc, content }))));
 };
 
 const downloadPage = url =>
-  downloadHtml(url)
+  axios.get(url)
+    .then(({ data }) => data)
     .then(htmlContent =>
       Promise.all([{ url, content: htmlContent }, downloadAssets(url, htmlContent)]));
 

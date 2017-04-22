@@ -1,8 +1,5 @@
 import { parse } from 'url';
 import cheerio from 'cheerio';
-import axios from '../lib/axios';
-
-const downloadFileByUrl = url => axios.get(url).then(({ data }) => data);
 
 const generateNameHtmlByUrl = (url) => {
   const { hostname, path } = parse(url);
@@ -73,6 +70,6 @@ const replaceSrcPathIntoHtml = (htmlContent, func) => {
 };
 
 export {
-  downloadFileByUrl, generateNameHtmlByUrl, generateNameFolderAssetsByUrl,
+  generateNameHtmlByUrl, generateNameFolderAssetsByUrl,
   generateNameFileAssetsBySrc, getUrlsToAssetsFromHtml, replaceSrcPathIntoHtml,
 };
