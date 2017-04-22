@@ -18,7 +18,7 @@ describe('test replaceSrcAttrIntoHtml', () => {
       ])
       .then(([indexBefore, indexAfter]) => expect(indexBefore).toBe(indexAfter))
       .then(done)
-      .then(done.fail)
+      .catch(done.fail)
     ;
   });
 });

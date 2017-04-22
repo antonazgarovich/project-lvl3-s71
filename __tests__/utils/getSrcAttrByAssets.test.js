@@ -9,6 +9,6 @@ describe('test getUrlsToAssetsFromHtml', () => {
       .then(urlsToAssets =>
         expect(urlsToAssets).toEqual(['assets/style.css', 'assets/hexlet-logo.svg', 'assets/script.js']))
       .then(done)
-      .then(done.fail);
+      .catch(done.fail);
   });
 });

@@ -27,7 +27,6 @@ describe('test page loader', () => {
   });
 
   it('loader is uploaded main html', (done) => {
-    console.log(path.join(pathToTempDir, 'localhost-test_files/assets-hexlet-logo.svg'));
     pageLoader(`${host}/test`, pathToTempDir)
       .then(() => [
         getPathToFileInTempDir('localhost-test_files/assets-hexlet-logo.svg'),
