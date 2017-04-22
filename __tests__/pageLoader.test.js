@@ -3,7 +3,7 @@ import path from 'path';
 import os from 'os';
 import fs from 'mz/fs';
 import pageLoader from '../src';
-import { getFileFixtureBefore, getFileFixtureAfter } from './helpers';
+import { getPathToFileFixtureBefore, getPathToFileFixtureAfter } from './helpers';
 
 const host = 'http://localhost';
 
@@ -17,13 +17,13 @@ describe('test page loader', () => {
 
     nock(host)
       .get('/test')
-      .reply(200, () => getFileFixtureBefore('index.html'))
+      .reply(200, () => fs.createReadStream(getPathToFileFixtureBefore('index.html')))
       .get('/assets/style.css')
-      .reply(200, () => getFileFixtureBefore('assets/style.css'))
+      .reply(200, () => fs.createReadStream(getPathToFileFixtureBefore('assets/style.css')))
       .get('/assets/hexlet-logo.svg')
-      .reply(200, () => getFileFixtureBefore('assets/hexlet-logo.svg'))
+      .reply(200, () => fs.createReadStream(getPathToFileFixtureBefore('assets/hexlet-logo.svg')))
       .get('/assets/script.js')
-      .reply(200, () => getFileFixtureBefore('assets/script.js'));
+      .reply(200, () => fs.createReadStream(getPathToFileFixtureBefore('assets/script.js')));
   });
 
   it('loader is uploaded main html', (done) => {
@@ -47,7 +47,7 @@ describe('test page loader', () => {
       })
       .then(() => Promise.all([
         fs.readFile(getPathToFileInTempDir('localhost-test.html'), 'utf8'),
-        getFileFixtureAfter('localhost-test.html'),
+        fs.readFile(getPathToFileFixtureAfter('localhost-test.html'), 'utf8'),
       ]))
       .then(([dataFromTempFile, dataFromFixture]) =>
         expect(dataFromTempFile).toBe(dataFromFixture))
