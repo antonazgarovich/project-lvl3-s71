@@ -1,7 +1,6 @@
-import fs from 'mz/fs';
-import path from 'path';
-import axios from './lib/axios';
-import { getNameFromUrl } from './utils';
+import downloadPage from './downloadPage';
+import convertPageToLocal from './convertPageToLocal';
+import putPage from './putPage';
 
 // Common logic
 // Page - it's mean html with assets(img, css, js).
@@ -16,17 +15,17 @@ import { getNameFromUrl } from './utils';
 //      1) getUrlsToAssetsFromHtml(htmlContent)
 // 2. transformPageToLocalResource(htmlContent)
 //   1) replaceSrcPathAtHtml
-// 3. putsPage(htmlContent, assets)
-//   1) putsHtmlToFile(pathToFile)
+// 3. putPage(pathToPut, htmlContent, assets)
+//   1) putHtmlToFile(pathToFile)
 //      1) generateNameHtmlByUrl(url)
-//   2) putsAssetsToFolder(pathToFolder)
+//   2) putAssetsToFolder(pathToFolder)
 //      1) generateNameFolderAssetsByUrl(url)
 
 const pageLoader = (url, output = '.') => {
-  const pathOutput = path.resolve(output, getNameFromUrl(url));
-  return axios.get(url)
-    .then(res => fs.writeFile(pathOutput, res.data))
-    .then(() => Promise.resolve(pathOutput));
+  const pugPageBinded = putPage.bind(null, output);
+  return downloadPage(url)
+    .then(convertPageToLocal)
+    .then(pugPageBinded);
 };
 
 export default pageLoader;

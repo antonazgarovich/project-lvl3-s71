@@ -12,8 +12,9 @@ const convertHtmlToLocal = (html) => {
 
   const newHtmlContent = replaceSrcPathIntoHtml(html.content, getPathForAssets);
   const localPath = generateNameHtmlByUrl(html.url);
+  const pathToFolderAsset = generateNameFolderAssetsByUrl(html.url);
 
-  return { ...html, content: newHtmlContent, localPath };
+  return { ...html, content: newHtmlContent, localPath, pathToFolderAsset };
 };
 
 const convertAssetsToLocal = (assets, url) => {

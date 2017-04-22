@@ -13,6 +13,13 @@
     "build": "babel src --out-dir dist",
     "prepublish": "npm run build"
   },
+  "jest": {
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "/__tests__/fixtures",
+      "/__tests__/helpers"
+    ]
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/antonazgarovich/project-lvl3-s71.git"
