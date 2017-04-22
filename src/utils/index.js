@@ -2,9 +2,9 @@ import { parse } from 'url';
 import cheerio from 'cheerio';
 import axios from '../lib/axios';
 
-const downloadFileByUrl = url => axios.get(url);
+const downloadFileByUrl = url => axios.get(url).then(({ data }) => data);
 
-const getNameFromUrl = (url) => {
+const generateNameHtmlByUrl = (url) => {
   const { hostname, path } = parse(url);
   const hostName = hostname.split('.').join('-');
   if (path.length === 1) {
@@ -16,6 +16,22 @@ const getNameFromUrl = (url) => {
 
   return `${hostName}${pathName}.html`;
 };
+
+const generateNameFolderAssetsByUrl = (url) => {
+  const { hostname, path } = parse(url);
+  const hostName = hostname.split('.').join('-');
+  if (path.length === 1) {
+    return `${hostName}_files`;
+  }
+
+  const pathName = path.split('.')[0]
+    .split('/').join('-');
+
+  return `${hostName}${pathName}_files`;
+};
+
+const generateNameFileAssetsBySrc = src =>
+  src.split('/').filter(path => path).join('-');
 
 const getUrlsToAssetsFromHtml = (htmlContent) => {
   const $ = cheerio.load(htmlContent);
@@ -38,4 +54,25 @@ const getUrlsToAssetsFromHtml = (htmlContent) => {
   return links.concat(images, scripts);
 };
 
-export { downloadFileByUrl, getNameFromUrl, getUrlsToAssetsFromHtml };
+const replaceSrcPathIntoHtml = (htmlContent, func) => {
+  const $ = cheerio.load(htmlContent);
+
+  $('link[rel=stylesheet]')
+    .filter((e, el) => $(el).attr('href'))
+    .map((e, el) => $(el).attr('href', func($(el).attr('href'))));
+
+  $('img[src]')
+    .filter((e, el) => $(el).attr('src'))
+    .map((e, el) => $(el).attr('src', func($(el).attr('src'))));
+
+  $('script[src]')
+    .filter((e, el) => $(el).attr('src'))
+    .map((e, el) => $(el).attr('src', func($(el).attr('src'))));
+
+  return $.html();
+};
+
+export {
+  downloadFileByUrl, generateNameHtmlByUrl, generateNameFolderAssetsByUrl,
+  generateNameFileAssetsBySrc, getUrlsToAssetsFromHtml, replaceSrcPathIntoHtml,
+};
