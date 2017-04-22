@@ -10,6 +10,6 @@ program
   .option('-o, --output', 'output folder')
   .action((url, { output }) =>
     pageLoader(url, output)
-      .then(pathToFile => console.log('Uploaded to:', pathToFile))
+      .then(() => console.log('Uploaded'))
       .catch(err => console.error('Errors: ', err)))
   .parse(process.argv);
