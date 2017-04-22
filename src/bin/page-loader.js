@@ -3,6 +3,7 @@
 import program from 'commander';
 import pageLoader from '..';
 
+// TODO: added report when uploaded page
 program
   .version('0.0.0')
   .arguments('<url>')
