@@ -9,10 +9,11 @@ const host = 'http://localhost';
 
 describe('test page loader', () => {
   let pathToTempDir;
-  let pathToTempFile;
+  let getPathToFileInTempDir;
+
   beforeAll(() => {
     pathToTempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tmp'));
-    pathToTempFile = path.join(pathToTempDir, 'localhost-test.html');
+    getPathToFileInTempDir = pathToSrc => path.join(pathToTempDir, pathToSrc);
 
     nock(host)
       .get('/test')
@@ -26,34 +27,30 @@ describe('test page loader', () => {
   });
 
   it('loader is uploaded main html', (done) => {
+    console.log(path.join(pathToTempDir, 'localhost-test_files/assets-hexlet-logo.svg'));
     pageLoader(`${host}/test`, pathToTempDir)
-      .then(done)
-      .catch(done.fail);
-  });
-
-  it('loader is uploaded assets and rename them', (done) => {
-    const pathToSvg = path.join(pathToTempDir, 'localhost-test_files', 'assets-hexlet-logo.svg');
-    const pathToCss = path.join(pathToTempDir, 'localhost-test_files', 'assets-style.css');
-    const pathToJs = path.join(pathToTempDir, 'localhost-test_files', 'assets-script.js');
-
-    Promise
-      .all([fs.stat(pathToSvg), fs.stat(pathToCss), fs.stat(pathToJs)])
+      .then(() => [
+        getPathToFileInTempDir('localhost-test_files/assets-hexlet-logo.svg'),
+        getPathToFileInTempDir('localhost-test_files/assets-style.css'),
+        getPathToFileInTempDir('localhost-test_files/assets-script.js'),
+      ])
+      .then(([pathToSvg, pathToCss, pathToJs]) => Promise.all([
+        fs.stat(pathToSvg),
+        fs.stat(pathToCss),
+        fs.stat(pathToJs),
+      ]))
       .then(([statSvg, statCss, statJs]) => {
+        // TODO: rewrite with test to check equals length files
         expect(statSvg.isFile()).toBe(true);
         expect(statCss.isFile()).toBe(true);
         expect(statJs.isFile()).toBe(true);
       })
-      .then(done)
-      .catch(done.fail);
-  });
-
-  it('change assets path', (done) => {
-    const localhostTestHtmlPath = getFileFixtureAfter('localhost-test.html');
-
-    Promise
-      .all([fs.readFile(pathToTempFile), localhostTestHtmlPath])
+      .then(() => Promise.all([
+        fs.readFile(getPathToFileInTempDir('localhost-test.html'), 'utf8'),
+        getFileFixtureAfter('localhost-test.html'),
+      ]))
       .then(([dataFromTempFile, dataFromFixture]) =>
-        expect(dataFromTempFile.toString()).toBe(dataFromFixture.toString()))
+        expect(dataFromTempFile).toBe(dataFromFixture))
       .then(done)
       .catch(done.fail);
   });
