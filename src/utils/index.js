@@ -45,7 +45,7 @@ const listOfTypeAssets = {
   },
 };
 
-export const getSrcAttrOfAssets = (htmlContent, typesAssets) => {
+export const getSrcAttrByAssets = (htmlContent, typesAssets) => {
   const $ = cheerio.load(htmlContent);
 
   return typesAssets.reduce((acc, type) => {
