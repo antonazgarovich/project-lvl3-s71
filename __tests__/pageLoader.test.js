@@ -6,6 +6,7 @@ import pageLoader from '../src';
 import { getPathToFileFixtureBefore, getPathToFileFixtureAfter } from './helpers';
 
 const host = 'http://localhost';
+process.env.DEBUG = 'page-loader:*';
 
 describe('test page loader', () => {
   let pathToTempDir;
