@@ -24,22 +24,5 @@ const convertAssetsToLocal = (assets, url) => {
 
 const convertPageToLocal = ([html, assets]) =>
   [convertHtmlToLocal(html), convertAssetsToLocal(assets, html.url)];
-// commonFunction:
-//   generateLocalPathForAssets
-//     generateNameFolderAssetsByUrl
-//     generateNameFileAssetsBySrc
-//
-// convertHtmlToLocal
-//   replaceSrcPathIntoHtml
-//     generateLocalPathForAssets
-//   generateLocalPathForHtml
-// convertAssetsToLocal
-//   replaceSrcPathIntoData
-//     generateLocalPathForAssets
-// result
-// [
-//   { localPath: 'localhost-test.html', content: '' },
-//   [{ localPath: 'localhost-test_files/assets-hexlet-logo.svg', content: '' }]
-// ]
 
 export default convertPageToLocal;
