@@ -8,7 +8,7 @@ const loadAsset = (urlToResource, pathToSrc) =>
     .then(({ data }) => data)
     .then(content => ({ src: pathToSrc, content }));
 
-const downloadPage = url =>
+export default url =>
   axios
     .get(url)
     .then(({ data: content }) => ({ url, content }))
@@ -19,6 +19,3 @@ const downloadPage = url =>
         .all(pathsToSrcAssetsFromHtml.map(loadAsset.bind(null, html.url)))
         .then(assets => [html, assets]);
     });
-
-
-export default downloadPage;

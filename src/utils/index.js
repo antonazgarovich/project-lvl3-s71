@@ -1,7 +1,7 @@
 import { parse } from 'url';
 import cheerio from 'cheerio';
 
-const generateNameHtmlByUrl = (url) => {
+export const generateNameHtmlByUrl = (url) => {
   const { hostname, path } = parse(url);
   const hostName = hostname.split('.').join('-');
   if (path.length === 1) {
@@ -14,7 +14,7 @@ const generateNameHtmlByUrl = (url) => {
   return `${hostName}${pathName}.html`;
 };
 
-const generateNameFolderAssetsByUrl = (url) => {
+export const generateNameFolderAssetsByUrl = (url) => {
   const { hostname, path } = parse(url);
   const hostName = hostname.split('.').join('-');
   if (path.length === 1) {
@@ -27,10 +27,10 @@ const generateNameFolderAssetsByUrl = (url) => {
   return `${hostName}${pathName}_files`;
 };
 
-const generateNameFileAssetsBySrc = src =>
+export const generateNameFileAssetsBySrc = src =>
   src.split('/').filter(path => path).join('-');
 
-const getUrlsToAssetsFromHtml = (htmlContent) => {
+export const getUrlsToAssetsFromHtml = (htmlContent) => {
   const $ = cheerio.load(htmlContent);
 
   const links = $('link[rel=stylesheet]')
@@ -51,7 +51,7 @@ const getUrlsToAssetsFromHtml = (htmlContent) => {
   return links.concat(images, scripts);
 };
 
-const replaceSrcPathIntoHtml = (htmlContent, func) => {
+export const replaceSrcPathIntoHtml = (htmlContent, func) => {
   const $ = cheerio.load(htmlContent);
 
   $('link[rel=stylesheet]')
@@ -67,9 +67,4 @@ const replaceSrcPathIntoHtml = (htmlContent, func) => {
     .map((e, el) => $(el).attr('src', func($(el).attr('src'))));
 
   return $.html();
-};
-
-export {
-  generateNameHtmlByUrl, generateNameFolderAssetsByUrl,
-  generateNameFileAssetsBySrc, getUrlsToAssetsFromHtml, replaceSrcPathIntoHtml,
 };

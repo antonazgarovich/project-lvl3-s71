@@ -1,17 +1,17 @@
 import path from 'path';
 import fs from 'mz/fs';
 
-const getPathToPut = (output, pathToPut) => path.resolve(output, pathToPut);
-
-const createFolderForAssets = pathToFolder => fs.mkdir(pathToFolder);
-
-const putPage = (output, [html, assets]) => {
-  const getPathToPutBinded = getPathToPut.bind(null, output);
-
-  const writeFile = asset => fs.writeFile(getPathToPutBinded(asset.localPath), asset.content);
-
-  return createFolderForAssets(getPathToPutBinded(html.pathToFolderAsset))
-    .then(() => Promise.all([html, ...assets].map(writeFile)));
-};
+// TODO: added report when put page
+const putPage = (output, [html, assets]) =>
+  fs.mkdir(path.resolve(output, assets.nameOfFolderAsset))
+    .then(() => assets.assets.map(asset =>
+      ({ ...asset, localPath: path.resolve(output, assets.nameOfFolderAsset, asset.localName) })))
+    .then(assetsWithLocalPaths => [
+      ...assetsWithLocalPaths,
+      { localPath: path.resolve(output, html.localName), content: html.content },
+    ])
+    .then(data => Promise.all(data.map(({ localPath, content }) =>
+      fs.writeFile(localPath, content))))
+    .then(() => console.log('success', output));
 
 export default putPage;

@@ -2,11 +2,7 @@ import downloadPage from './downloadPage';
 import convertPageToLocal from './convertPageToLocal';
 import putPage from './putPage';
 
-const pageLoader = (url, output = '.') => {
-  const pugPageBinded = putPage.bind(null, output);
-  return downloadPage(url)
+export default (url, output = '.') =>
+  downloadPage(url)
     .then(convertPageToLocal)
-    .then(pugPageBinded);
-};
-
-export default pageLoader;
+    .then(putPage.bind(null, output));

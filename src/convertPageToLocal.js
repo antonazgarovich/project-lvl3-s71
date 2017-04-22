@@ -1,28 +1,25 @@
 import path from 'path';
-import { replaceSrcPathIntoHtml, generateNameFolderAssetsByUrl, generateNameFileAssetsBySrc, generateNameHtmlByUrl } from './utils';
+import {
+  replaceSrcPathIntoHtml,
+  generateNameFolderAssetsByUrl,
+  generateNameFileAssetsBySrc,
+  generateNameHtmlByUrl,
+} from './utils';
 
+const convertPageToLocal = ([html, assets]) => {
+  const nameOfFolderAsset = generateNameFolderAssetsByUrl(html.url);
 
-const generatePathToLocalAssets = (url) => {
-  const nameFolderAssets = generateNameFolderAssetsByUrl(url);
-  return src => path.join(nameFolderAssets, generateNameFileAssetsBySrc(src));
+  const htmlContentWithLocalAssets = replaceSrcPathIntoHtml(html.content, src =>
+    path.join(nameOfFolderAsset, generateNameFileAssetsBySrc(src)));
+  const localNameOfHtml = generateNameHtmlByUrl(html.url);
+
+  const assetsWithLocalName = assets
+    .map(({ src, content }) => ({ localName: generateNameFileAssetsBySrc(src), content }));
+
+  return [
+    { url: html.url, localName: localNameOfHtml, content: htmlContentWithLocalAssets },
+    { nameOfFolderAsset, assets: assetsWithLocalName },
+  ];
 };
-
-const convertHtmlToLocal = (html) => {
-  const getPathForAssets = generatePathToLocalAssets(html.url);
-
-  const newHtmlContent = replaceSrcPathIntoHtml(html.content, getPathForAssets);
-  const localPath = generateNameHtmlByUrl(html.url);
-  const pathToFolderAsset = generateNameFolderAssetsByUrl(html.url);
-
-  return { ...html, content: newHtmlContent, localPath, pathToFolderAsset };
-};
-
-const convertAssetsToLocal = (assets, url) => {
-  const getPathForAssets = generatePathToLocalAssets(url);
-  return assets.map(asset => ({ ...asset, localPath: getPathForAssets(asset.src) }));
-};
-
-const convertPageToLocal = ([html, assets]) =>
-  [convertHtmlToLocal(html), convertAssetsToLocal(assets, html.url)];
 
 export default convertPageToLocal;
