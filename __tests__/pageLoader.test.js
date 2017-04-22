@@ -56,8 +56,7 @@ describe('test page loader', () => {
     Promise
       .all([fs.readFile(pathToTempFile), localhostTestHtmlPath])
       .then(([dataFromTempFile, dataFromFixture]) =>
-        expect(dataFromTempFile.toString()).toBe(dataFromFixture.toString())
-      )
+        expect(dataFromTempFile.toString()).toBe(dataFromFixture.toString()))
       .then(done)
       .catch(done.fail);
   });

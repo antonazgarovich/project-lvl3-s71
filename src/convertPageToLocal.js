@@ -37,6 +37,9 @@ const convertPageToLocal = ([html, assets]) =>
 //   replaceSrcPathIntoData
 //     generateLocalPathForAssets
 // result
-// [{ localPath: 'localhost-test.html', content: '' }, [{ localPath: 'localhost-test_files/assets-hexlet-logo.svg', content: '' }]]
+// [
+//   { localPath: 'localhost-test.html', content: '' },
+//   [{ localPath: 'localhost-test_files/assets-hexlet-logo.svg', content: '' }]
+// ]
 
 export default convertPageToLocal;
