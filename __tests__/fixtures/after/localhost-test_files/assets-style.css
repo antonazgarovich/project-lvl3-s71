@@ -1,0 +1,20 @@
+body {
+  margin: 0;
+}
+
+.app {
+  display: flex;
+  width: 100vw;
+  height: 100vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.hexlet-logo {
+  width: 200px;
+  height: 200px;
+}
+
+.no-img {
+  display: none;
+}

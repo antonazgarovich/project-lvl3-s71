@@ -1,13 +1,12 @@
-import fs from 'mz/fs';
-import path from 'path';
-import axios from './lib/axios';
-import { getNameFromUrl } from './utils';
+import downloadPage from './downloadPage';
+import convertPageToLocal from './convertPageToLocal';
+import putPage from './putPage';
 
-const loader = (url, output = '.') => {
-  const pathOutput = path.resolve(output, getNameFromUrl(url));
-  return axios.get(url)
-    .then(res => fs.writeFile(pathOutput, res.data))
-    .then(() => Promise.resolve(pathOutput));
+const pageLoader = (url, output = '.') => {
+  const pugPageBinded = putPage.bind(null, output);
+  return downloadPage(url)
+    .then(convertPageToLocal)
+    .then(pugPageBinded);
 };
 
-export default loader;
+export default pageLoader;
