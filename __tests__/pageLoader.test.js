@@ -29,20 +29,23 @@ describe('test page loader', () => {
   it('loader is uploaded main html', (done) => {
     pageLoader(`${host}/test`, pathToTempDir)
       .then(() => [
-        getPathToFileInTempDir('localhost-test_files/assets-hexlet-logo.svg'),
-        getPathToFileInTempDir('localhost-test_files/assets-style.css'),
-        getPathToFileInTempDir('localhost-test_files/assets-script.js'),
+        [
+          getPathToFileInTempDir('localhost-test_files/assets-hexlet-logo.svg'),
+          getPathToFileInTempDir('localhost-test_files/assets-style.css'),
+          getPathToFileInTempDir('localhost-test_files/assets-script.js'),
+        ],
+        [
+          getPathToFileFixtureAfter('localhost-test_files/assets-hexlet-logo.svg'),
+          getPathToFileFixtureAfter('localhost-test_files/assets-style.css'),
+          getPathToFileFixtureAfter('localhost-test_files/assets-script.js'),
+        ],
       ])
-      .then(([pathToSvg, pathToCss, pathToJs]) => Promise.all([
-        fs.stat(pathToSvg),
-        fs.stat(pathToCss),
-        fs.stat(pathToJs),
+      .then(([tempDir, fixtureAfter]) => Promise.all([
+        Promise.all(tempDir.map(asset => fs.stat(asset))),
+        Promise.all(fixtureAfter.map(asset => fs.stat(asset))),
       ]))
-      .then(([statSvg, statCss, statJs]) => {
-        // TODO: rewrite with test to check equals length files
-        expect(statSvg.isFile()).toBe(true);
-        expect(statCss.isFile()).toBe(true);
-        expect(statJs.isFile()).toBe(true);
+      .then(([tempDir, fixtureAfter]) => {
+        tempDir.forEach((stat, i) => expect(stat.size).toBe(fixtureAfter[i].size));
       })
       .then(() => Promise.all([
         fs.readFile(getPathToFileInTempDir('localhost-test.html'), 'utf8'),
