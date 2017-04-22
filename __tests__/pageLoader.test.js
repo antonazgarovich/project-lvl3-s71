@@ -10,7 +10,6 @@ const host = 'http://localhost';
 describe('test page loader', () => {
   let pathToTempDir;
   let pathToTempFile;
-  let loaderResult;
   beforeAll(() => {
     pathToTempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tmp'));
     pathToTempFile = path.join(pathToTempDir, 'localhost-test.html');
@@ -24,12 +23,10 @@ describe('test page loader', () => {
       .reply(200, () => getFileFixtureBefore('assets/hexlet-logo.svg'))
       .get('/assets/script.js')
       .reply(200, () => getFileFixtureBefore('assets/script.js'));
-
-    loaderResult = pageLoader(`${host}/test`, pathToTempDir);
   });
 
   it('loader is uploaded main html', (done) => {
-    loaderResult
+    pageLoader(`${host}/test`, pathToTempDir)
       .then(done)
       .catch(done.fail);
   });
