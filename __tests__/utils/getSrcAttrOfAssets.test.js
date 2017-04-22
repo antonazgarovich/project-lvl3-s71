@@ -1,4 +1,4 @@
-import { getUrlsToAssetsFromHtml } from '../../src/utils';
+import { getSrcAttrOfAssets } from '../../src/utils';
 import { getFileFixtureBefore } from '../helpers';
 
 describe('test getUrlsToAssetsFromHtml', () => {
@@ -9,7 +9,7 @@ describe('test getUrlsToAssetsFromHtml', () => {
   });
 
   it('test', () => {
-    const urlsToAssets = getUrlsToAssetsFromHtml(htmlContent);
+    const urlsToAssets = getSrcAttrOfAssets(htmlContent, ['css', 'img', 'script']);
     const result = ['assets/style.css', 'assets/hexlet-logo.svg', 'assets/script.js'];
     expect(urlsToAssets).toEqual(result);
   });

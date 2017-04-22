@@ -1,5 +1,5 @@
 import { resolve as resolveUrl } from 'url';
-import { getUrlsToAssetsFromHtml } from './utils';
+import { getSrcAttrOfAssets } from './utils';
 import axios from './lib/axios';
 
 const loadAsset = (urlToResource, pathToSrc) =>
@@ -13,7 +13,7 @@ export default url =>
     .get(url)
     .then(({ data: content }) => ({ url, content }))
     .then((html) => {
-      const pathsToSrcAssetsFromHtml = getUrlsToAssetsFromHtml(html.content);
+      const pathsToSrcAssetsFromHtml = getSrcAttrOfAssets(html.content, ['css', 'img', 'script']);
 
       return Promise
         .all(pathsToSrcAssetsFromHtml.map(loadAsset.bind(null, html.url)))

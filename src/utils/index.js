@@ -30,43 +30,50 @@ export const generateNameFolderAssetsByUrl = (url) => {
 export const generateNameFileAssetsBySrc = src =>
   src.split('/').filter(path => path).join('-');
 
-// TODO: use polymorphism
-export const getUrlsToAssetsFromHtml = (htmlContent) => {
-  const $ = cheerio.load(htmlContent);
-
-  const links = $('link[rel=stylesheet]')
-    .filter((e, el) => $(el).attr('href'))
-    .map((e, el) => $(el).attr('href'))
-    .get();
-
-  const images = $('img[src]')
-    .filter((e, el) => $(el).attr('src'))
-    .map((e, el) => $(el).attr('src'))
-    .get();
-
-  const scripts = $('script[src]')
-    .filter((e, el) => $(el).attr('src'))
-    .map((e, el) => $(el).attr('src'))
-    .get();
-
-  return links.concat(images, scripts);
+const listOfTypeAssets = {
+  css: {
+    selector: 'link[rel=stylesheet]',
+    attrSrc: 'href',
+  },
+  img: {
+    selector: 'img',
+    attrSrc: 'src',
+  },
+  script: {
+    selector: 'script',
+    attrSrc: 'src',
+  },
 };
 
-// TODO: use polymorphism
-export const replaceSrcPathIntoHtml = (htmlContent, func) => {
+export const getSrcAttrOfAssets = (htmlContent, typesAssets) => {
   const $ = cheerio.load(htmlContent);
 
-  $('link[rel=stylesheet]')
-    .filter((e, el) => $(el).attr('href'))
-    .map((e, el) => $(el).attr('href', func($(el).attr('href'))));
+  return typesAssets.reduce((acc, type) => {
+    const asset = listOfTypeAssets[type];
 
-  $('img[src]')
-    .filter((e, el) => $(el).attr('src'))
-    .map((e, el) => $(el).attr('src', func($(el).attr('src'))));
+    const listOfAssets = $(`${asset.selector}[${asset.attrSrc}]`)
+      .filter((e, el) =>
+        $(el).attr(asset.attrSrc))
+      .map((e, el) =>
+        $(el).attr(asset.attrSrc))
+      .get();
 
-  $('script[src]')
-    .filter((e, el) => $(el).attr('src'))
-    .map((e, el) => $(el).attr('src', func($(el).attr('src'))));
+    return [...acc, ...listOfAssets];
+  }, []);
+};
+
+export const replaceSrcAttrIntoHtml = (htmlContent, typesAssets, func) => {
+  const $ = cheerio.load(htmlContent);
+
+  typesAssets.forEach((type) => {
+    const asset = listOfTypeAssets[type];
+
+    $(`${asset.selector}[${asset.attrSrc}]`)
+      .filter((e, el) =>
+        $(el).attr(asset.attrSrc))
+      .map((e, el) =>
+        $(el).attr(asset.attrSrc, func($(el).attr(asset.attrSrc))));
+  });
 
   return $.html();
 };

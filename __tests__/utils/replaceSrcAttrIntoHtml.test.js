@@ -1,5 +1,5 @@
 import path from 'path';
-import { replaceSrcPathIntoHtml, generateNameFolderAssetsByUrl, generateNameFileAssetsBySrc } from '../../src/utils';
+import { replaceSrcAttrIntoHtml, generateNameFolderAssetsByUrl, generateNameFileAssetsBySrc } from '../../src/utils';
 import { getFileFixtureBefore, getFileFixtureAfter } from '../helpers';
 
 const generatePathToLocalAssets = (url) => {
@@ -7,11 +7,11 @@ const generatePathToLocalAssets = (url) => {
   return src => path.join(nameFolderAssets, generateNameFileAssetsBySrc(src));
 };
 
-describe('test replaceSrcPathIntoHtml', () => {
+describe('test replaceSrcAttrIntoHtml', () => {
   it('test', () => {
     const getPathForAssets = generatePathToLocalAssets('http://localhost/test');
     const indexBefore = getFileFixtureBefore('index.html');
     const indexAfter = getFileFixtureAfter('localhost-test.html');
-    expect(replaceSrcPathIntoHtml(indexBefore, getPathForAssets)).toBe(indexAfter);
+    expect(replaceSrcAttrIntoHtml(indexBefore, ['css', 'img', 'script'], getPathForAssets)).toBe(indexAfter);
   });
 });

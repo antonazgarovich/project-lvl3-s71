@@ -1,6 +1,6 @@
 import path from 'path';
 import {
-  replaceSrcPathIntoHtml,
+  replaceSrcAttrIntoHtml,
   generateNameFolderAssetsByUrl,
   generateNameFileAssetsBySrc,
   generateNameHtmlByUrl,
@@ -9,7 +9,7 @@ import {
 const convertPageToLocal = ([html, assets]) => {
   const nameOfFolderAsset = generateNameFolderAssetsByUrl(html.url);
 
-  const htmlContentWithLocalAssets = replaceSrcPathIntoHtml(html.content, src =>
+  const htmlContentWithLocalAssets = replaceSrcAttrIntoHtml(html.content, ['css', 'img', 'script'], src =>
     path.join(nameOfFolderAsset, generateNameFileAssetsBySrc(src)));
   const localNameOfHtml = generateNameHtmlByUrl(html.url);
 
