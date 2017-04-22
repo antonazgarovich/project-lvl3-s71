@@ -8,8 +8,8 @@
   "scripts": {
     "babel-node": "babel-node",
     "eslint": "eslint",
-    "test": "jest",
-    "test-watch": "jest --watch",
+    "test": "DEBUG=\"page-loader:*\" jest",
+    "test-watch": "DEBUG=\"page-loader:*\" jest --watch",
     "build": "babel src --out-dir dist",
     "prepublish": "npm run build"
   },
@@ -41,6 +41,7 @@
     "babel-preset-stage-0": "^6.22.0",
     "cheerio": "^0.22.0",
     "commander": "^2.9.0",
+    "debug": "^2.6.4",
     "flow-bin": "^0.38.0",
     "flow-typed": "^2.0.0",
     "mz": "^2.6.0"
