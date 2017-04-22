@@ -38,7 +38,9 @@ describe('test page loader', () => {
     const pathToSvg = path.join(pathToTempDir, 'localhost-test_files', 'assets-hexlet-logo.svg');
     const pathToCss = path.join(pathToTempDir, 'localhost-test_files', 'assets-style.css');
     const pathToJs = path.join(pathToTempDir, 'localhost-test_files', 'assets-script.js');
-    Promise.all([fs.stat(pathToSvg), fs.stat(pathToCss), fs.stat(pathToJs)])
+
+    Promise
+      .all([fs.stat(pathToSvg), fs.stat(pathToCss), fs.stat(pathToJs)])
       .then(([statSvg, statCss, statJs]) => {
         expect(statSvg.isFile()).toBe(true);
         expect(statCss.isFile()).toBe(true);
@@ -50,12 +52,13 @@ describe('test page loader', () => {
 
   it('change assets path', (done) => {
     const localhostTestHtmlPath = getFileFixtureAfter('localhost-test.html');
-    Promise.all([fs.readFile(pathToTempFile), localhostTestHtmlPath])
-      .then(([dataFromTempFile, dataFromFixture]) => {
-        expect(dataFromTempFile.toString()).toBe(dataFromFixture.toString());
-        // TODO: move to .then(done)
-        done();
-      })
+
+    Promise
+      .all([fs.readFile(pathToTempFile), localhostTestHtmlPath])
+      .then(([dataFromTempFile, dataFromFixture]) =>
+        expect(dataFromTempFile.toString()).toBe(dataFromFixture.toString())
+      )
+      .then(done)
       .catch(done.fail);
   });
 });
