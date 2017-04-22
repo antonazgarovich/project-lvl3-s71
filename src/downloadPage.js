@@ -3,10 +3,10 @@ import { getUrlsToAssetsFromHtml } from './utils';
 import axios from './lib/axios';
 
 const downloadAssets = (urlToResource, htmlContent) => {
-  const pathToSrcAssets = getUrlsToAssetsFromHtml(htmlContent);
+  const pathsToSrcAssetsFromHtml = getUrlsToAssetsFromHtml(htmlContent);
 
   return Promise.all(
-    pathToSrcAssets.map(pathToSrc =>
+    pathsToSrcAssetsFromHtml.map(pathToSrc =>
       axios.get(resolveUrl(urlToResource, pathToSrc))
         .then(({ data }) => data)
         .then(content => ({ src: pathToSrc, content }))));
