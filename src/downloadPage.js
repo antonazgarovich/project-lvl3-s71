@@ -14,15 +14,15 @@ const downloadAssets = (urlToResource, htmlContent) => {
   return Promise.all(
     pathToSrcAssets.map(pathToSrc =>
       downloadFileByUrl(resolveUrl(urlToResource, pathToSrc))
-        .then(content => ({ type: 'assets', src: pathToSrc, content }))));
+        .then(content => ({ src: pathToSrc, content }))));
 };
 
 // TODO: add jsdoc
 // TODO: rename to loadPage
 const downloadPage = url =>
   downloadHtml(url)
-    .then(htmlContent => Promise.all([htmlContent, downloadAssets(url, htmlContent)]))
-    .then(([htmlContent, assets]) => [{ type: 'html', url, content: htmlContent }, assets]);
+    .then(htmlContent =>
+      Promise.all([{ url, content: htmlContent }, downloadAssets(url, htmlContent)]));
     // TODO: replace result to object Page
 
 
