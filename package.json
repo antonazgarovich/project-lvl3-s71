@@ -18,6 +18,12 @@
       "/node_modules/",
       "/__tests__/fixtures",
       "/__tests__/helpers"
+    ],
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "coverageDirectory": "tmp",
+    "coverageReporters": [
+      "lcov"
     ]
   },
   "repository": {
