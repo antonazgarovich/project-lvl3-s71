@@ -8,8 +8,8 @@
   "scripts": {
     "babel-node": "babel-node",
     "eslint": "eslint",
-    "test": "jest",
-    "test-watch": "jest --watch",
+    "test": "DEBUG=\"page-loader:*\" jest",
+    "test-watch": "DEBUG=\"page-loader:*\" jest --watch",
     "build": "babel src --out-dir dist",
     "prepublish": "npm run build"
   },
