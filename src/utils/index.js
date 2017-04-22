@@ -30,6 +30,7 @@ export const generateNameFolderAssetsByUrl = (url) => {
 export const generateNameFileAssetsBySrc = src =>
   src.split('/').filter(path => path).join('-');
 
+// TODO: use polymorphism
 export const getUrlsToAssetsFromHtml = (htmlContent) => {
   const $ = cheerio.load(htmlContent);
 
@@ -51,6 +52,7 @@ export const getUrlsToAssetsFromHtml = (htmlContent) => {
   return links.concat(images, scripts);
 };
 
+// TODO: use polymorphism
 export const replaceSrcPathIntoHtml = (htmlContent, func) => {
   const $ = cheerio.load(htmlContent);
 
