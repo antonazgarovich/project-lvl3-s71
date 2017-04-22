@@ -1,29 +1,21 @@
 import { resolve as resolveUrl } from 'url';
-import { downloadFileByUrl, getUrlsToAssetsFromHtml } from './utils';
+import { getSrcAttrByAssets } from './utils';
+import axios from './lib/axios';
 
-// 1. downloadPage(url)
-//   1) downloadHtml(url)
-//   2) downloadAssets(htmlContent)
-//      1) getUrlsToAssetsFromHtml(htmlContent)
-// TODO: rename to load all in file
-const downloadHtml = url => downloadFileByUrl(url);
+const loadAsset = (urlToResource, pathToSrc) =>
+  axios
+    .get(resolveUrl(urlToResource, pathToSrc))
+    .then(({ data }) => data)
+    .then(content => ({ src: pathToSrc, content }));
 
-const downloadAssets = (urlToResource, htmlContent) => {
-  const pathToSrcAssets = getUrlsToAssetsFromHtml(htmlContent);
+export default url =>
+  axios
+    .get(url)
+    .then(({ data: content }) => ({ url, content }))
+    .then((html) => {
+      const pathsToSrcAssetsFromHtml = getSrcAttrByAssets(html.content, ['css', 'img', 'script']);
 
-  return Promise.all(
-    pathToSrcAssets.map(pathToSrc =>
-      downloadFileByUrl(resolveUrl(urlToResource, pathToSrc))
-        .then(content => ({ src: pathToSrc, content }))));
-};
-
-// TODO: add jsdoc
-// TODO: rename to loadPage
-const downloadPage = url =>
-  downloadHtml(url)
-    .then(htmlContent =>
-      Promise.all([{ url, content: htmlContent }, downloadAssets(url, htmlContent)]));
-    // TODO: replace result to object Page
-
-
-export default downloadPage;
+      return Promise
+        .all(pathsToSrcAssetsFromHtml.map(loadAsset.bind(null, html.url)))
+        .then(assets => [html, assets]);
+    });

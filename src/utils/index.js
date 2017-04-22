@@ -1,10 +1,7 @@
 import { parse } from 'url';
 import cheerio from 'cheerio';
-import axios from '../lib/axios';
 
-const downloadFileByUrl = url => axios.get(url).then(({ data }) => data);
-
-const generateNameHtmlByUrl = (url) => {
+export const generateNameHtmlByUrl = (url) => {
   const { hostname, path } = parse(url);
   const hostName = hostname.split('.').join('-');
   if (path.length === 1) {
@@ -17,7 +14,7 @@ const generateNameHtmlByUrl = (url) => {
   return `${hostName}${pathName}.html`;
 };
 
-const generateNameFolderAssetsByUrl = (url) => {
+export const generateNameFolderAssetsByUrl = (url) => {
   const { hostname, path } = parse(url);
   const hostName = hostname.split('.').join('-');
   if (path.length === 1) {
@@ -30,49 +27,53 @@ const generateNameFolderAssetsByUrl = (url) => {
   return `${hostName}${pathName}_files`;
 };
 
-const generateNameFileAssetsBySrc = src =>
+export const generateNameFileAssetsBySrc = src =>
   src.split('/').filter(path => path).join('-');
 
-const getUrlsToAssetsFromHtml = (htmlContent) => {
-  const $ = cheerio.load(htmlContent);
-
-  const links = $('link[rel=stylesheet]')
-    .filter((e, el) => $(el).attr('href'))
-    .map((e, el) => $(el).attr('href'))
-    .get();
-
-  const images = $('img[src]')
-    .filter((e, el) => $(el).attr('src'))
-    .map((e, el) => $(el).attr('src'))
-    .get();
-
-  const scripts = $('script[src]')
-    .filter((e, el) => $(el).attr('src'))
-    .map((e, el) => $(el).attr('src'))
-    .get();
-
-  return links.concat(images, scripts);
+const listOfTypeAssets = {
+  css: {
+    selector: 'link[rel=stylesheet]',
+    attrSrc: 'href',
+  },
+  img: {
+    selector: 'img',
+    attrSrc: 'src',
+  },
+  script: {
+    selector: 'script',
+    attrSrc: 'src',
+  },
 };
 
-const replaceSrcPathIntoHtml = (htmlContent, func) => {
+export const getSrcAttrByAssets = (htmlContent, typesAssets) => {
   const $ = cheerio.load(htmlContent);
 
-  $('link[rel=stylesheet]')
-    .filter((e, el) => $(el).attr('href'))
-    .map((e, el) => $(el).attr('href', func($(el).attr('href'))));
+  return typesAssets.reduce((acc, type) => {
+    const asset = listOfTypeAssets[type];
 
-  $('img[src]')
-    .filter((e, el) => $(el).attr('src'))
-    .map((e, el) => $(el).attr('src', func($(el).attr('src'))));
+    const listOfAssets = $(`${asset.selector}[${asset.attrSrc}]`)
+      .filter((e, el) =>
+        $(el).attr(asset.attrSrc))
+      .map((e, el) =>
+        $(el).attr(asset.attrSrc))
+      .get();
 
-  $('script[src]')
-    .filter((e, el) => $(el).attr('src'))
-    .map((e, el) => $(el).attr('src', func($(el).attr('src'))));
+    return [...acc, ...listOfAssets];
+  }, []);
+};
+
+export const replaceSrcAttrIntoHtml = (htmlContent, typesAssets, func) => {
+  const $ = cheerio.load(htmlContent);
+
+  typesAssets.forEach((type) => {
+    const asset = listOfTypeAssets[type];
+
+    $(`${asset.selector}[${asset.attrSrc}]`)
+      .filter((e, el) =>
+        $(el).attr(asset.attrSrc))
+      .map((e, el) =>
+        $(el).attr(asset.attrSrc, func($(el).attr(asset.attrSrc))));
+  });
 
   return $.html();
-};
-
-export {
-  downloadFileByUrl, generateNameHtmlByUrl, generateNameFolderAssetsByUrl,
-  generateNameFileAssetsBySrc, getUrlsToAssetsFromHtml, replaceSrcPathIntoHtml,
 };
