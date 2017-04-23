@@ -12,10 +12,12 @@ const http = debug('page-loader:http');
 const app = debug('page-loader:app');
 const fsDebug = debug('page-loader:fs');
 
-const loadAsset = (onStartLoad, urlToResource, pathToSrc) => {
+const listrFiles = (ctx, data) => (ctx ? ctx.links = data : null);
+const listrPage = (ctx, data) => (ctx ? ctx.page = data : null);
+
+const loadAsset = (urlToResource, pathToSrc) => {
   http('start load asset: %s', pathToSrc);
   const url = resolveUrl(urlToResource, pathToSrc);
-  onStartLoad(url);
   return axios
     .get(url)
     .then(({ data }) => data)
@@ -28,22 +30,23 @@ const loadAsset = (onStartLoad, urlToResource, pathToSrc) => {
 
 
 // FIXME: don't download page if file exists
-export default (url, output = '.', options = { onStartLoad: () => '', onFinishLoad: () => '' }) => {
+export default (url, output = '.', ctx) => {
   app('start work');
   http('start load html: %s', url);
-  options.onStartLoad(url);
   return axios
     .get(url)
     .then((response) => {
       http('finished load html: %s', url);
+      listrPage(ctx, url);
       return response;
     })
     .then(({ data: content }) => ({ url, content }))
     .then((html) => {
       const pathsToSrcAssetsFromHtml = getSrcAttrByAssets(html.content, ['css', 'img', 'script']);
 
+      listrFiles(ctx, pathsToSrcAssetsFromHtml);
       return Promise
-        .all(pathsToSrcAssetsFromHtml.map(loadAsset.bind(null, options.onStartLoad, html.url)))
+        .all(pathsToSrcAssetsFromHtml.map(loadAsset.bind(null, html.url)))
         .then(assets => [html, assets]);
     })
     .then(([html, assets]) => {
@@ -78,11 +81,10 @@ export default (url, output = '.', options = { onStartLoad: () => '', onFinishLo
         ])
         .then(data =>
           Promise
-            .all(data.map(({ url: urlFile, localPath, content }) => {
+            .all(data.map(({ localPath, content }) => {
               fsDebug('start write file to path: %s', localPath);
               return fs.writeFile(localPath, content)
-                .then(() => fsDebug('finished write file to path: %s', localPath))
-                .then(() => options.onFinishLoad(urlFile));
+                .then(() => fsDebug('finished write file to path: %s', localPath));
             }))
             .then(() => app('finish work'))
             .then(() => data))
