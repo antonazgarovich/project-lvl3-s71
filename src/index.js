@@ -12,8 +12,8 @@ const http = debug('page-loader:http');
 const app = debug('page-loader:app');
 const fsDebug = debug('page-loader:fs');
 
-const listrFiles = (ctx, data) => (ctx ? ctx.links = data : null);
-const listrPage = (ctx, data) => (ctx ? ctx.page = data : null);
+const listrFiles = (ctx, data) => (ctx ? ctx.links = data : null); // eslint-disable-line
+const listrPage = (ctx, data) => (ctx ? ctx.page = data : null); // eslint-disable-line
 
 const loadAsset = (urlToResource, pathToSrc) => {
   http('start load asset: %s', pathToSrc);
