@@ -17,6 +17,9 @@ program
         }
         console.log('Finish download');
       })
-      .catch(err => console.error('Errors: ', err));
+      .catch((err) => {
+        console.error(err);
+        process.exit(1);
+      });
   })
   .parse(process.argv);
