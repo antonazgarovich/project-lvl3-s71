@@ -11,7 +11,7 @@ describe('test page loader', () => {
   let pathToTempDir;
   let getPathToFileInTempDir;
 
-  beforeAll(() => {
+  beforeEach(() => {
     pathToTempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'tmp'));
     getPathToFileInTempDir = pathToSrc => path.join(pathToTempDir, pathToSrc);
 
@@ -23,7 +23,15 @@ describe('test page loader', () => {
       .get('/assets/hexlet-logo.svg')
       .reply(200, () => fs.createReadStream(getPathToFileFixtureBefore('assets/hexlet-logo.svg')))
       .get('/assets/script.js')
-      .reply(200, () => fs.createReadStream(getPathToFileFixtureBefore('assets/script.js')));
+      .reply(200, () => fs.createReadStream(getPathToFileFixtureBefore('assets/script.js')))
+      .get('/not-found-asset')
+      .reply(200, '<script src="/assets/not-found-asset.js"></script>')
+      .get('/assets/not-found-asset.js')
+      .reply(404)
+      .get('/not-found')
+      .reply(404)
+      .get('/server-not-available')
+      .reply(500);
   });
 
   it('loader is uploaded main html', (done) => {
@@ -56,4 +64,42 @@ describe('test page loader', () => {
       .then(done)
       .catch(done.fail);
   });
+
+  it('test file not found 404', (done) => {
+    pageLoader(`${host}/not-found`, pathToTempDir)
+      .then(done.fail)
+      .catch((err) => {
+        expect(err).toBe(`Error: file isn't found by url ${host}/not-found`);
+        done();
+      });
+  });
+
+  it('test server 500', (done) => {
+    pageLoader(`${host}/server-not-available`, pathToTempDir)
+      .then(done.fail)
+      .catch((err) => {
+        expect(err).toBe("Error: server isn't available");
+        done();
+      });
+  });
+
+  it('test not found assets', (done) => {
+    pageLoader(`${host}/not-found-asset`, pathToTempDir)
+      .then(done.fail)
+      .catch((err) => {
+        expect(err).toBe(`Error: file isn't found by url ${host}/assets/not-found-asset.js`);
+        done();
+      });
+  });
+
+  it('test file exists', (done) => {
+    pageLoader(`${host}/test`, pathToTempDir)
+      .then(() => pageLoader(`${host}/test`, pathToTempDir))
+      .then(done.fail)
+      .catch((err) => {
+        expect(err).toBe('Error: file already exists');
+        done();
+      });
+  });
 });
+

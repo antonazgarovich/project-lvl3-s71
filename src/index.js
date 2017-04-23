@@ -83,5 +83,18 @@ export default (url, output = '.') => {
             .then(() => app('finish work'))
             .then(() => data))
         .then(data => data.map(asset => asset.localPath));
+    })
+    .catch((err) => {
+      if (err.response) {
+        if (err.response.status === 404) {
+          return Promise.reject(`Error: file isn't found by url ${err.config.url}`);
+        } else if (err.response.status === 500) {
+          return Promise.reject("Error: server isn't available");
+        }
+      } else if (err.code === 'EEXIST') {
+        return Promise.reject('Error: file already exists');
+      }
+
+      return Promise.reject(err);
     });
 };
