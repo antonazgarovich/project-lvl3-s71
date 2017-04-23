@@ -101,7 +101,5 @@ describe('test page loader', () => {
         done();
       });
   });
-
-  it('test if not url');
 });
 
