@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
+import Listr from 'listr';
 import program from 'commander';
+import colors from 'colors'; // eslint-disable-line
 import pageLoader from '..';
 
 let run = false;
@@ -12,14 +14,35 @@ program
   .option('-o, --output', 'output folder')
   .action((url, { output = './' }) => {
     run = true;
-    console.log('Start download url:', url, 'path:', output);
-    pageLoader(url, output)
-      .then((pathsFiles) => {
-        if (!process.env.DEBUG) {
-          pathsFiles.forEach(path => console.log(path));
-        }
-        console.log('Finish download');
-      })
+
+    const tasks = new Listr([
+      {
+        title: `Saving page ${url}`.green,
+        task: () =>
+          new Listr([
+            {
+              title: 'Uploading'.cyan,
+              task: ctx =>
+                pageLoader(url, output, ctx)
+                  .then(res => (ctx.res = res))
+                  .then(() => new Listr([
+                    {
+                      title: 'Loading page'.cyan,
+                      task: () => console.log((` ${'✔'.green}  Page ${ctx.page} is ready\n`)),
+                    },
+                    {
+                      title: 'Loading files'.cyan,
+                      task: () => ctx.links.forEach(link =>
+                        console.log((` ${'✔'.green}  File ${link} is ready`))),
+                    },
+                  ])),
+            },
+
+          ]),
+      },
+    ]);
+
+    return tasks.run()
       .catch((err) => {
         console.error(err);
         process.exit(1);

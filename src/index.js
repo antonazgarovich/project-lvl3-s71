@@ -12,33 +12,39 @@ const http = debug('page-loader:http');
 const app = debug('page-loader:app');
 const fsDebug = debug('page-loader:fs');
 
+const listrFiles = (ctx, data) => (ctx ? ctx.links = data : null); // eslint-disable-line
+const listrPage = (ctx, data) => (ctx ? ctx.page = data : null); // eslint-disable-line
+
 const loadAsset = (urlToResource, pathToSrc) => {
   http('start load asset: %s', pathToSrc);
+  const url = resolveUrl(urlToResource, pathToSrc);
   return axios
-    .get(resolveUrl(urlToResource, pathToSrc))
+    .get(url)
     .then(({ data }) => data)
     .then((response) => {
       http('finished load asset: %s', pathToSrc);
       return response;
     })
-    .then(content => ({ src: pathToSrc, content }));
+    .then(content => ({ url, src: pathToSrc, content }));
 };
 
 
 // FIXME: don't download page if file exists
-export default (url, output = '.') => {
+export default (url, output = '.', ctx) => {
   app('start work');
   http('start load html: %s', url);
   return axios
     .get(url)
     .then((response) => {
       http('finished load html: %s', url);
+      listrPage(ctx, url);
       return response;
     })
     .then(({ data: content }) => ({ url, content }))
     .then((html) => {
       const pathsToSrcAssetsFromHtml = getSrcAttrByAssets(html.content, ['css', 'img', 'script']);
 
+      listrFiles(ctx, pathsToSrcAssetsFromHtml);
       return Promise
         .all(pathsToSrcAssetsFromHtml.map(loadAsset.bind(null, html.url)))
         .then(assets => [html, assets]);
@@ -55,7 +61,7 @@ export default (url, output = '.') => {
       app('finish generate name of html');
 
       const assetsWithLocalName = assets
-        .map(({ src, content }) => ({ localName: generateNameFileAssetsBySrc(src), content }));
+        .map(asset => ({ ...asset, localName: generateNameFileAssetsBySrc(asset.src) }));
       app('finish add local name of assets');
 
       return [
@@ -71,7 +77,7 @@ export default (url, output = '.') => {
           ({ ...asset, localPath: path.resolve(output, nameOfFolderAsset, asset.localName) })))
         .then(assetsWithLocalPaths => [
           ...assetsWithLocalPaths,
-          { localPath: path.resolve(output, html.localName), content: html.content },
+          { localPath: path.resolve(output, html.localName), content: html.content, url: html.url },
         ])
         .then(data =>
           Promise
