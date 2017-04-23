@@ -28,7 +28,7 @@ describe('test page loader', () => {
       .reply(200, '<script src="/assets/not-found-asset.js"></script>')
       .get('/assets/not-found-asset.js')
       .reply(404)
-      .get('/no-found')
+      .get('/not-found')
       .reply(404)
       .get('/server-not-available')
       .reply(500);
@@ -66,10 +66,10 @@ describe('test page loader', () => {
   });
 
   it('test file not found 404', (done) => {
-    pageLoader(`${host}/no-found`, pathToTempDir)
+    pageLoader(`${host}/not-found`, pathToTempDir)
       .then(done.fail)
       .catch((err) => {
-        expect(err).toBe("Error: page isn't found");
+        expect(err).toBe(`Error: file isn't found by url ${host}/not-found`);
         done();
       });
   });
@@ -87,7 +87,7 @@ describe('test page loader', () => {
     pageLoader(`${host}/not-found-asset`, pathToTempDir)
       .then(done.fail)
       .catch((err) => {
-        expect(err).toBe("Error: asset isn't found");
+        expect(err).toBe(`Error: file isn't found by url ${host}/assets/not-found-asset.js`);
         done();
       });
   });
@@ -102,6 +102,6 @@ describe('test page loader', () => {
       });
   });
 
-  it('test interrupted by user');
+  it('test if not url');
 });
 
